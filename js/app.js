@@ -4,7 +4,7 @@ function initArrayOfDinoObjects(json) {
     arrayOfDinosFromJson = [];
     let jsonDinos = json.Dinos;
     for (let index = 0; index < jsonDinos.length; index++) {
-        arrayOfDinosFromJson.push(new Dino(
+        arrayOfDinosFromJson.push(new DinoJsonData(
             jsonDinos[index].species,
             jsonDinos[index].weight,
             jsonDinos[index].height,
@@ -22,7 +22,7 @@ function initArrayOfDinoObjects(json) {
     console.log(arrayOfDinosFromJson);
 })();
 
-function createHumanObject(formInput) {
+function createHumanFormDataObject(formInput) {
     let name = "";
     let feet = "";
     let inches = "";
@@ -42,7 +42,7 @@ function createHumanObject(formInput) {
             diet = formVariable.value;
         }
     }
-    return new HumanData(name, feet, inches, weight, diet);
+    return new HumanFormData(name, feet, inches, weight, diet);
 }
 
 function compareHumanWeightAgainstDinoWeight(dino, human) {
@@ -50,9 +50,9 @@ function compareHumanWeightAgainstDinoWeight(dino, human) {
     let dinoWeight = dino.weight;
     let result = dinoWeight - humanWeight;
     if (result > 0) {
-        return dino.species + " is " + result + " Kg heavier than you!";
+        return dino.species + " is " + result + " (lbs) heavier than you!";
     } else {
-        return dino.species + " is " + Math.abs(result) + " Kg lighter than you!";
+        return dino.species + " is " + Math.abs(result) + " (lbs) lighter than you!";
     }
 }
 
@@ -76,52 +76,71 @@ function compareHumanDietAgainstDinoDiet(dino, human) {
     let humanDiet = human.diet;
     let dinoDiet = dino.diet;
     if (isSameDiet(dinoDiet, humanDiet)) {
-        return dino.species + "is also " + dinoDiet + ", just like you!";
+        return dino.species + " is also " + dinoDiet + ", just like you!";
     } else {
-        return dino.species + "is " + dinoDiet + ", while you are " + humanDiet;
+        return dino.species + " is " + dinoDiet + ", while you are " + humanDiet;
     }
 }
 
+function generateRandomFactForDinoJsonData(dinoJsonData, humanFormData) {
+    let randomFactNumber = Math.floor((Math.random() * 5));
+    switch (randomFactNumber) {
+        case 0:
+            dinoJsonData.fact = compareHumanWeightAgainstDinoWeight(dinoJsonData, humanFormData);
+            break;
+        case 1:
+            dinoJsonData.fact = compareHumanHeightAgainstDinoHeight(dinoJsonData, humanFormData);
+            break;
+        case 2:
+            dinoJsonData.fact = compareHumanDietAgainstDinoDiet(dinoJsonData, humanFormData);
+            break;
+        case 3:
+            dinoJsonData.fact = dinoJsonData.species + " lived in " + dinoJsonData.where;
+            break;
+        case 4:
+            dinoJsonData.fact = dinoJsonData.species + " lived during " + dinoJsonData.when + " era!";
+            break;
+        case 5:
+            break;
+    }
+}
 
 function generateUiObject(data) {
-    if (data instanceof HumanData) {
-        let humanUiObject = new UserInterfaceData();
+    if (data instanceof HumanFormData) {
+        let humanUiObject = new UserInterfaceDto(data.name, 'human');
+        humanUiObject.createImageSrc();
         return humanUiObject;
     } else {
+        let dinoUiObject = new DinoUserInterfaceDto(data.species, data.species);
+        dinoUiObject.createImageSrc();
+        dinoUiObject.setFact(data.fact);
+        return dinoUiObject;
+    }
+}
 
+function appendUiObjectsToView(uiObjects) {
+    for (const uiObject of uiObjects) {
+        console.log(uiObject);
     }
 }
 
 $("#btn").click(function (e) {
+  //  fetch("dino.json")
+  //      .then(response => response.json())
+  //      .then(json => initArrayOfDinoObjects(json));
+
     let formInput = $('#dino-compare').serializeArray();
-    console.log(formInput);
-    let human = createHumanObject(formInput);
-    console.log(arrayOfDinosFromJson[0]);
- //   let humanUiObject =
+    let humanFormData = createHumanFormDataObject(formInput);
+    for (const dinoJsonData of arrayOfDinosFromJson) {
+        generateRandomFactForDinoJsonData(dinoJsonData, humanFormData);
+    }
+    let uiObjects = [];
+    uiObjects.push(generateUiObject(humanFormData));
+    for (const dinoJsonData of arrayOfDinosFromJson) {
+        uiObjects.push(generateUiObject(dinoJsonData));
+    }
+    appendUiObjectsToView(uiObjects);
 });
-
-// Create Dino Constructor
-
-
-// Create Dino Objects
-
-
-// Create Human Object
-
-// Use IIFE to get human data from form
-
-
-// Create Dino Compare Method 1
-// NOTE: Weight in JSON file is in lbs, height in inches.
-
-
-// Create Dino Compare Method 2
-// NOTE: Weight in JSON file is in lbs, height in inches.
-
-
-// Create Dino Compare Method 3
-// NOTE: Weight in JSON file is in lbs, height in inches.
-
 
 // Generate Tiles for each Dino in Array
 
