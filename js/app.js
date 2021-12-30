@@ -1,26 +1,37 @@
-let arrayOfDinosFromJson = [];
-
+/**
+ * Convert JSON array into normal JS array
+ * @param json
+ * @returns {*[]}
+ */
 function initArrayOfDinoObjects(json) {
-    arrayOfDinosFromJson = [];
+    let arrayOfDinosFromJson = [];
     let jsonDinos = json.Dinos;
-    for (let index = 0; index < jsonDinos.length; index++) {
-        arrayOfDinosFromJson.push(new DinoJsonData(
-            jsonDinos[index].species,
-            jsonDinos[index].weight,
-            jsonDinos[index].height,
-            jsonDinos[index].diet,
-            jsonDinos[index].where,
-            jsonDinos[index].when,
-            jsonDinos[index].fact));
-    }
+    jsonDinos.forEach(function (jsonDinoObject) {
+        arrayOfDinosFromJson.push(
+            new DinoJsonData(
+                jsonDinoObject.species,
+                jsonDinoObject.weight,
+                jsonDinoObject.height,
+                jsonDinoObject.diet,
+                jsonDinoObject.where,
+                jsonDinoObject.when,
+                jsonDinoObject.fact
+            )
+        );
+    });
+    return arrayOfDinosFromJson;
 }
 
-(function () {
-    fetch("dino.json")
-        .then(response => response.json())
-        .then(json => initArrayOfDinoObjects(json));
-    console.log(arrayOfDinosFromJson);
-})();
+
+function fetchDinoDataInJsonFormat() {
+    return fetch("dino.json")
+        .then((response) => response.json())
+        .then(json => {
+            return json;
+        }).catch(error => {
+            console.error(error);
+        });
+}
 
 function createHumanFormDataObject(formInput) {
     let name = "";
@@ -29,7 +40,7 @@ function createHumanFormDataObject(formInput) {
     let weight = "";
     let diet = "";
 
-    for (const formVariable of formInput) {
+    formInput.forEach(function (formVariable) {
         if (formVariable.name == 'name') {
             name = formVariable.value;
         } else if (formVariable.name == 'feet') {
@@ -41,7 +52,7 @@ function createHumanFormDataObject(formInput) {
         } else if (formVariable.name == 'diet') {
             diet = formVariable.value;
         }
-    }
+    });
     return new HumanFormData(name, feet, inches, weight, diet);
 }
 
@@ -124,22 +135,33 @@ function appendUiObjectsToView(uiObjects) {
     }
 }
 
-$("#btn").click(function (e) {
-  //  fetch("dino.json")
-  //      .then(response => response.json())
-  //      .then(json => initArrayOfDinoObjects(json));
+async function main() {
+    let dinoJsonObject = await fetchDinoDataInJsonFormat();
+    let arrayOfDinoObjects = initArrayOfDinoObjects(dinoJsonObject);
 
     let formInput = $('#dino-compare').serializeArray();
     let humanFormData = createHumanFormDataObject(formInput);
-    for (const dinoJsonData of arrayOfDinosFromJson) {
-        generateRandomFactForDinoJsonData(dinoJsonData, humanFormData);
-    }
+
+    arrayOfDinoObjects.forEach(function (dinoArrayObject) {
+        generateRandomFactForDinoJsonData(dinoArrayObject, humanFormData);
+    });
+
     let uiObjects = [];
+
     uiObjects.push(generateUiObject(humanFormData));
-    for (const dinoJsonData of arrayOfDinosFromJson) {
-        uiObjects.push(generateUiObject(dinoJsonData));
-    }
+
+    arrayOfDinoObjects.forEach(function (dinoArrayObject) {
+        uiObjects.push(generateUiObject(dinoArrayObject));
+    });
+
     appendUiObjectsToView(uiObjects);
+}
+
+/**
+ * Activate main function. This is main entry point from UI to javascript
+ */
+$("#btn").click(function (e) {
+    main().then(r => console.log("JESSICA: " + r));
 });
 
 // Generate Tiles for each Dino in Array
