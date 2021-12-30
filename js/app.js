@@ -41,15 +41,15 @@ function createHumanFormDataObject(formInput) {
     let diet = "";
 
     formInput.forEach(function (formVariable) {
-        if (formVariable.name == 'name') {
+        if (formVariable.name === 'name') {
             name = formVariable.value;
-        } else if (formVariable.name == 'feet') {
+        } else if (formVariable.name === 'feet') {
             feet = formVariable.value;
-        } else if (formVariable.name == 'inches') {
+        } else if (formVariable.name === 'inches') {
             inches = formVariable.value;
-        } else if (formVariable.name == 'weight') {
+        } else if (formVariable.name === 'weight') {
             weight = formVariable.value;
-        } else if (formVariable.name == 'diet') {
+        } else if (formVariable.name === 'diet') {
             diet = formVariable.value;
         }
     });
@@ -61,9 +61,9 @@ function compareHumanWeightAgainstDinoWeight(dino, human) {
     let dinoWeight = dino.weight;
     let result = dinoWeight - humanWeight;
     if (result > 0) {
-        return dino.species + " is " + result + " (lbs) heavier than you!";
+        return `${dino.species} is ${result} (lbs) heavier than you!`;
     } else {
-        return dino.species + " is " + Math.abs(result) + " (lbs) lighter than you!";
+        return `${dino.species} is ${Math.abs(result)} (lbs) lighter than you!`;
     }
 }
 
@@ -73,9 +73,9 @@ function compareHumanHeightAgainstDinoHeight(dino, human) {
     let dinoTotalHeightInInches = dino.height;
     let result = dinoTotalHeightInInches - humanTotalHeightInInches;
     if (result > 0) {
-        return dino.species + " is " + result + " inches taller than you!";
+        return `${dino.species} is ${result} inches taller than you!`;
     } else {
-        return dino.species + " is " + Math.abs(result) + " inches smaller than you!";
+        return `${dino.species} is ${Math.abs(result)} inches smaller than you!`;
     }
 }
 
@@ -87,9 +87,9 @@ function compareHumanDietAgainstDinoDiet(dino, human) {
     let humanDiet = human.diet;
     let dinoDiet = dino.diet;
     if (isSameDiet(dinoDiet, humanDiet)) {
-        return dino.species + " is also " + dinoDiet + ", just like you!";
+        return `${dino.species} is also ${dinoDiet}, just like you!`;
     } else {
-        return dino.species + " is " + dinoDiet + ", while you are " + humanDiet;
+        return `${dino.species} is ${dinoDiet}, while you are ${humanDiet}!`;
     }
 }
 
@@ -106,10 +106,10 @@ function generateRandomFactForDinoJsonData(dinoJsonData, humanFormData) {
             dinoJsonData.fact = compareHumanDietAgainstDinoDiet(dinoJsonData, humanFormData);
             break;
         case 3:
-            dinoJsonData.fact = dinoJsonData.species + " lived in " + dinoJsonData.where;
+            dinoJsonData.fact = `${dinoJsonData.species} lived in ${dinoJsonData.where}`;
             break;
         case 4:
-            dinoJsonData.fact = dinoJsonData.species + " lived during " + dinoJsonData.when + " era!";
+            dinoJsonData.fact = `${dinoJsonData.species} lived during ${dinoJsonData.when} era!`;
             break;
         case 5:
             break;
