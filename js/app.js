@@ -155,5 +155,7 @@ async function main() {
  * Activate main function. This is main entry point from UI to javascript
  */
 $("#btn").click(function (e) {
-        main();
+    $('#dino-compare').hide();; // make input form disappear
+    $('#grid').show(); // make infographic appear
+    main();
 });
