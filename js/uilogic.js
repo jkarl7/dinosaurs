@@ -14,7 +14,6 @@ function isDinoOrBird(type) {
 function appendUiObjectsToView(uiObjects) {
     let elementChildIndex = 1;
     uiObjects.forEach(function (uiObject) {
-        console.log(uiObject);
         // noinspection JSJQueryEfficiency
         let elementSelector = $('div.grid-item:nth-child(' + elementChildIndex + ' )');
         if (uiObject.type === 'human') {
