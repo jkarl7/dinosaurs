@@ -15,14 +15,18 @@ function initArrayOfDinoObjects(json) {
                 jsonDinoObject.diet,
                 jsonDinoObject.where,
                 jsonDinoObject.when,
-                jsonDinoObject.fact
+                jsonDinoObject.fact,
+                jsonDinoObject.type
             )
         );
     });
     return arrayOfDinosFromJson;
 }
 
-
+/**
+ * Get dino data as JSON
+ * @returns {Promise<any>}
+ */
 function fetchDinoDataInJsonFormat() {
     return fetch("dino.json")
         .then((response) => response.json())
@@ -56,79 +60,56 @@ function createHumanFormDataObject(formInput) {
     return new HumanFormData(name, feet, inches, weight, diet);
 }
 
-function compareHumanWeightAgainstDinoWeight(dino, human) {
-    let humanWeight = human.weight;
-    let dinoWeight = dino.weight;
-    let result = dinoWeight - humanWeight;
-    if (result > 0) {
-        return `${dino.species} is ${result} (lbs) heavier than you!`;
-    } else {
-        return `${dino.species} is ${Math.abs(result)} (lbs) lighter than you!`;
-    }
-}
-
-function compareHumanHeightAgainstDinoHeight(dino, human) {
-    const ONE_FEET_IN_INCHES = 12;
-    let humanTotalHeightInInches = human.inches + (ONE_FEET_IN_INCHES * human.feet);
-    let dinoTotalHeightInInches = dino.height;
-    let result = dinoTotalHeightInInches - humanTotalHeightInInches;
-    if (result > 0) {
-        return `${dino.species} is ${result} inches taller than you!`;
-    } else {
-        return `${dino.species} is ${Math.abs(result)} inches smaller than you!`;
-    }
-}
-
-function isSameDiet(dinoDiet, humanDiet) {
-    return humanDiet.toLowerCase().localeCompare(dinoDiet.toLowerCase()) === 0;
-}
-
-function compareHumanDietAgainstDinoDiet(dino, human) {
-    let humanDiet = human.diet;
-    let dinoDiet = dino.diet;
-    if (isSameDiet(dinoDiet, humanDiet)) {
-        return `${dino.species} is also ${dinoDiet}, just like you!`;
-    } else {
-        return `${dino.species} is ${dinoDiet}, while you are ${humanDiet}!`;
-    }
-}
-
-function generateRandomFactForDinoJsonData(dinoJsonData, humanFormData) {
+function generateRandomFactForDinoJsonData(dinoArrayObject, humanFormData) {
     let randomFactNumber = Math.floor((Math.random() * 5));
     switch (randomFactNumber) {
         case 0:
-            dinoJsonData.fact = compareHumanWeightAgainstDinoWeight(dinoJsonData, humanFormData);
+            dinoArrayObject.fact = compareHumanWeightAgainstDinoWeight(dinoArrayObject, humanFormData);
             break;
         case 1:
-            dinoJsonData.fact = compareHumanHeightAgainstDinoHeight(dinoJsonData, humanFormData);
+            dinoArrayObject.fact = compareHumanHeightAgainstDinoHeight(dinoArrayObject, humanFormData);
             break;
         case 2:
-            dinoJsonData.fact = compareHumanDietAgainstDinoDiet(dinoJsonData, humanFormData);
+            dinoArrayObject.fact = compareHumanDietAgainstDinoDiet(dinoArrayObject, humanFormData);
             break;
         case 3:
-            dinoJsonData.fact = `${dinoJsonData.species} lived in ${dinoJsonData.where}`;
+            dinoArrayObject.fact = `${dinoArrayObject.species} lived in ${dinoArrayObject.where}`;
             break;
         case 4:
-            dinoJsonData.fact = `${dinoJsonData.species} lived during ${dinoJsonData.when} era!`;
+            dinoArrayObject.fact = `${dinoArrayObject.species} lived during ${dinoArrayObject.when} era!`;
             break;
         case 5:
             break;
     }
 }
 
-function generateUiObject(data) {
-    if (data instanceof HumanFormData) {
-        let humanUiObject = new UserInterfaceDto(data.name, 'human');
+/**
+ * Build objects to pass on to UI logic
+ * @param dinoArrayObject
+ * @returns {BirdUserInterfaceDto|UserInterfaceDto|DinoUserInterfaceDto}
+ */
+function generateUiObject(dinoArrayObject) {
+    if (dinoArrayObject instanceof HumanFormData) {
+        let humanUiObject = new UserInterfaceDto(dinoArrayObject.name, 'human');
         humanUiObject.createImageSrc();
         return humanUiObject;
-    } else {
-        let dinoUiObject = new DinoUserInterfaceDto(data.species, data.species);
+    } else if (dinoArrayObject instanceof DinoJsonData && dinoArrayObject.type === 'dino'){
+        let dinoUiObject = new DinoUserInterfaceDto(dinoArrayObject.species, dinoArrayObject.species);
         dinoUiObject.createImageSrc();
-        dinoUiObject.setFact(data.fact);
+        dinoUiObject.setFact(dinoArrayObject.fact);
         return dinoUiObject;
+    } else {
+        let birdUiObject = new BirdUserInterfaceDto(dinoArrayObject.species, dinoArrayObject.species);
+        birdUiObject.createImageSrc();
+        birdUiObject.setFact(dinoArrayObject.fact);
+        return birdUiObject;
     }
 }
 
+/**
+ * We wrap all code into async function in order to use await, which waits until normal JSON is returned instead of Promise object
+ * @returns {Promise<void>}
+ */
 async function main() {
     let dinoJsonObject = await fetchDinoDataInJsonFormat();
     let arrayOfDinoObjects = initArrayOfDinoObjects(dinoJsonObject);
@@ -137,7 +118,9 @@ async function main() {
     let humanFormData = createHumanFormDataObject(formInput);
 
     arrayOfDinoObjects.forEach(function (dinoArrayObject) {
-        generateRandomFactForDinoJsonData(dinoArrayObject, humanFormData);
+        if (dinoArrayObject.type === 'dino') {
+            generateRandomFactForDinoJsonData(dinoArrayObject, humanFormData);
+        }
     });
 
     let uiObjects = [];
@@ -155,7 +138,7 @@ async function main() {
  * Activate main function. This is main entry point from UI to javascript
  */
 $("#btn").click(function (e) {
-    $('#dino-compare').hide();; // make input form disappear
+    $('#dino-compare').hide(); // make input form disappear
     $('#grid').show(); // make infographic appear
     main();
 });

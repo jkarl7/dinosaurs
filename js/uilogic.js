@@ -7,6 +7,10 @@ function appendCssToTargetElement(uiObject, elementSelector) {
     elementSelector.append(uiObject.fact !== undefined ? "<div><b>Fact:</b> " + uiObject.fact + "</div>" : "");
 }
 
+function isDinoOrBird(type) {
+    return type === 'dino' || type === 'bird';
+}
+
 function appendUiObjectsToView(uiObjects) {
     let elementChildIndex = 1;
     uiObjects.forEach(function (uiObject) {
@@ -17,10 +21,10 @@ function appendUiObjectsToView(uiObjects) {
             let humanTileElementSelector = $('div.humanTile');
             appendCssToTargetElement(uiObject, humanTileElementSelector);
         }
-        if (uiObject.type === 'dino' && !elementSelector.hasClass('humanTile')) {
+        if (isDinoOrBird(uiObject.type) && !elementSelector.hasClass('humanTile')) {
             appendCssToTargetElement(uiObject, elementSelector);
             elementChildIndex++;
-        } else if (uiObject.type === 'dino' && elementSelector.hasClass('humanTile')) {
+        } else if (isDinoOrBird(uiObject.type) && elementSelector.hasClass('humanTile')) {
             elementChildIndex++;
             appendCssToTargetElement(uiObject, $('div.grid-item:nth-child(' + elementChildIndex + ' )'));
             elementChildIndex++;
