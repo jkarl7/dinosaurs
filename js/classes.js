@@ -21,6 +21,7 @@ function DinoJsonData(species, weight, height, diet, where, when, fact) {
 function UserInterfaceDto(objectName, imageName) {
     this.objectName = objectName;
     this.imageName = imageName;
+    this.type = 'human';
 }
 
 UserInterfaceDto.prototype.createImageSrc = function () {
@@ -30,6 +31,7 @@ UserInterfaceDto.prototype.createImageSrc = function () {
 function DinoUserInterfaceDto(name, imageName) {
     UserInterfaceDto.call(this, name, imageName);
     this.fact = "";
+    this.type = 'dino';
 }
 
 DinoUserInterfaceDto.prototype = UserInterfaceDto;

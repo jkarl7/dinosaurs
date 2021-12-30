@@ -129,12 +129,6 @@ function generateUiObject(data) {
     }
 }
 
-function appendUiObjectsToView(uiObjects) {
-    for (const uiObject of uiObjects) {
-        console.log(uiObject);
-    }
-}
-
 async function main() {
     let dinoJsonObject = await fetchDinoDataInJsonFormat();
     let arrayOfDinoObjects = initArrayOfDinoObjects(dinoJsonObject);
@@ -161,14 +155,5 @@ async function main() {
  * Activate main function. This is main entry point from UI to javascript
  */
 $("#btn").click(function (e) {
-    main().then(r => console.log("JESSICA: " + r));
+        main();
 });
-
-// Generate Tiles for each Dino in Array
-
-// Add tiles to DOM
-
-// Remove form from screen
-
-
-// On button click, prepare and display infographic
