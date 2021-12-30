@@ -38,26 +38,20 @@ function fetchDinoDataInJsonFormat() {
 }
 
 function createHumanFormDataObject(formInput) {
-    let name = "";
-    let feet = "";
-    let inches = "";
-    let weight = "";
-    let diet = "";
-
     formInput.forEach(function (formVariable) {
         if (formVariable.name === 'name') {
-            name = formVariable.value;
+            this.name = formVariable.value;
         } else if (formVariable.name === 'feet') {
-            feet = formVariable.value;
+            this.feet = formVariable.value;
         } else if (formVariable.name === 'inches') {
-            inches = formVariable.value;
+            this.inches = formVariable.value;
         } else if (formVariable.name === 'weight') {
-            weight = formVariable.value;
+            this.weight = formVariable.value;
         } else if (formVariable.name === 'diet') {
-            diet = formVariable.value;
+            this.diet = formVariable.value;
         }
     });
-    return new HumanFormData(name, feet, inches, weight, diet);
+    return new HumanFormData(this.name, this.feet, this.inches, this.weight, this.diet);
 }
 
 function generateRandomFactForDinoJsonData(dinoArrayObject, humanFormData) {
